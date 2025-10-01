@@ -29,27 +29,62 @@ export default {
       JSON.stringify(body, null, 2),
     );
     const baseUrl = 'https://translate.miwa.lol';
-    const payload = {
-      content: '```json\n' + JSON.stringify(body, null, 2) + '\n```',
-      embeds: [{
-        author: {
-          name: body.author || 'Unknown',
-          url: `${baseUrl}/users/${body.author || 'unknown'}`,
-          icon_url: `${baseUrl}/avatar/128/${body.author || 'unknown'}.png`,
-        },
-        title: `Change ${body.change_id} - ${body.action}`,
-        url: `${baseUrl}/changes/${body.change_id}`,
-        description: `A change was made by ${body.author || 'unknown'}.`,
-        timestamp: body.timestamp,
-        color: 0x00FF00,
-      }]
-    };
+    const embed: DiscordEmbed = {
+      author: body.author || body.user ? {
+        name: body.author || body.user,
+        url: `${baseUrl}/users/${body.author || body.user}`,
+        icon_url: `${baseUrl}/avatar/128/${body.author || body.user}.png`,
+      } : undefined,
+      title: body.action,
+      url: `${baseUrl}${body.url}`,
+      description: `A change was made by ${body.author || 'unknown'}.`,
+      timestamp: body.timestamp,
+      color: 0x00FF00,
+      footer: {
+        text: makeFooterText(body),
+      },
+    }
+
+    if (body.action === 'Repository notification received') {
+      embed.color = 0xFFFF00;
+      embed.description = `A repository notification was received from ${body.author ? `[${body.author}](${baseUrl}/users/${body.author})` : 'unknown'}.`;
+    } else if (body.action === 'String added in the repository') {
+      embed.color = 0x0000FF;
+      embed.description = `A new string was added by ${body.author ? `[${body.author}](${baseUrl}/users/${body.author})` : 'unknown'}.`;
+      embed.fields = [{ name: 'String', value: body.target?.[0] || 'N/A' }];
+    } else if (body.action === 'String updated in the repository') {
+      embed.color = 0x0000FF;
+      embed.description = `A string was updated by ${body.author ? `[${body.author}](${baseUrl}/users/${body.author})` : 'unknown'}.`;
+      embed.fields = [
+        { name: 'Old String', value: body.source ? body.source[0] || 'N/A' : 'N/A' },
+        { name: 'New String', value: body.target ? body.target[0] || 'N/A' : 'N/A' },
+      ];
+    } else if (body.action === 'Changes committed') {
+      embed.color = 0x00FFFF;
+      embed.description = `Changes were committed by ${body.author ? `[${body.author}](${baseUrl}/users/${body.author})` : 'unknown'}.`;
+    }
+
     await fetch(webhookUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
+        content: '```json\n' + JSON.stringify(body, null, 2) + '\n```',
+        embeds: [embed],
+        username: 'Weblate',
+        avatar_url: 'https://weblate.org/static/weblate-128.png',
+      }),
     });
 
     return new Response(null, { status: 204 });
   }
 } satisfies ExportedHandler<Env>;
+
+function makeFooterText(body: Push): string {
+  if (body.project && body.component) {
+    return `${body.project} / ${body.component}`;
+  } else if (body.project) {
+    return body.project;
+  } else {
+    return `Change ID: ${body.change_id}`;
+  }
+}

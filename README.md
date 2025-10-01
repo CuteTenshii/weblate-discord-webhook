@@ -13,6 +13,14 @@ To prevent abuse, this worker:
 
 Webhook validation is not yet implemented.
 
+## Handled Events
+
+Currently, the worker handles the following Weblate events:
+- Repository notification received
+- String added in the repository
+- String updated in the repository
+- Changes committed
+
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE.txt](LICENSE.txt) file for details.
