@@ -1,6 +1,9 @@
+const weblateUserAgent = /^Weblate\/[\d.]+$/;
+
 export default {
   async fetch(request, env, ctx): Promise<Response> {
-    if (request.method !== 'POST') {
+    const userAgent = request.headers.get('user-agent') || '';
+    if (request.method !== 'POST' || !weblateUserAgent.test(userAgent)) {
       return new Response(null, { status: 405 });
     }
 
