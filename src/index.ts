@@ -49,13 +49,27 @@ export default {
     } else if (body.action === 'String added in the repository') {
       embed.color = 0x0000FF;
       embed.description = `A new string was added by ${body.author ? `[${body.author}](${baseUrl}/users/${body.author})` : 'unknown'}.`;
-      embed.fields = [{ name: 'String', value: body.target?.[0] || 'N/A' }];
+      embed.fields = [{ name: 'String', value: body.target?.[0] || '*N/A*' }];
     } else if (body.action === 'String updated in the repository') {
       embed.color = 0x0000FF;
       embed.description = `A string was updated by ${body.author ? `[${body.author}](${baseUrl}/users/${body.author})` : 'unknown'}.`;
       embed.fields = [
-        { name: 'Old String', value: body.source ? body.source[0] || 'N/A' : 'N/A' },
-        { name: 'New String', value: body.target ? body.target[0] || 'N/A' : 'N/A' },
+        {name: 'Old String', value: body.source ? body.source[0] || '*N/A*' : '*N/A*'},
+        {name: 'New String', value: body.target ? body.target[0] || '*N/A*' : '*N/A*'},
+      ];
+    } else if (body.action === 'Translation changed') {
+      embed.color = 0x00FF00;
+      embed.description = `A translation was changed by ${body.author ? `[${body.author}](${baseUrl}/users/${body.author})` : 'unknown'}.`;
+      embed.fields = [
+        {name: 'Old Translation', value: body.source ? body.source[0] || '*N/A*' : '*N/A*'},
+        {name: 'New Translation', value: body.target ? body.target[0] || '*N/A*' : '*N/A*'},
+      ];
+    } else if (body.action === 'Suggestion removed') {
+      embed.color = 0xFF0000;
+      embed.description = `A suggestion was removed by ${body.author ? `[${body.author}](${baseUrl}/users/${body.author})` : 'unknown'}.`;
+      embed.fields = [
+        {name: 'Removed Translation', value: body.target ? body.target[0] || '*N/A*' : '*N/A*'},
+        {name: 'Current Suggestion', value: body.source ? body.source[0] || '*N/A*' : '*N/A*'},
       ];
     } else if (body.action === 'Changes committed') {
       embed.color = 0x00FFFF;

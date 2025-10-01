@@ -20,6 +20,8 @@ Currently, the worker handles the following Weblate events:
 - Repository rebased
 - String added in the repository
 - String updated in the repository
+- Translation changed
+- Suggestion removed
 - Changes committed
 
 ## License
