@@ -17,6 +17,7 @@ Webhook validation is not yet implemented.
 
 Currently, the worker handles the following Weblate events:
 - Repository notification received
+- Repository rebased
 - String added in the repository
 - String updated in the repository
 - Changes committed

@@ -37,7 +37,6 @@ export default {
       } : undefined,
       title: body.action,
       url: `${baseUrl}${body.url}`,
-      description: `A change was made by ${body.author || 'unknown'}.`,
       timestamp: body.timestamp,
       color: 0x00FF00,
       footer: {
@@ -47,7 +46,10 @@ export default {
 
     if (body.action === 'Repository notification received') {
       embed.color = 0xFFFF00;
-      embed.description = `A repository notification was received from ${body.author ? `[${body.author}](${baseUrl}/users/${body.author})` : 'unknown'}.`;
+      embed.description = `A repository notification was received from ${body.user ? `[${body.user}](${baseUrl}/users/${body.user})` : 'unknown'}.`;
+    } else if (body.action === 'Repository rebased') {
+      embed.color = 0xFFA500;
+      embed.description = `The repository was rebased by ${body.user ? `[${body.user}](${baseUrl}/users/${body.user})` : 'unknown'}.`;
     } else if (body.action === 'String added in the repository') {
       embed.color = 0x0000FF;
       embed.description = `A new string was added by ${body.author ? `[${body.author}](${baseUrl}/users/${body.author})` : 'unknown'}.`;
