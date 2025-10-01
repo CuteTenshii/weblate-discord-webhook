@@ -24,16 +24,12 @@ export default {
     if (!webhookUrl) return new Response('WEBHOOK_URL is not set', { status: 500 });
 
     const body = await request.json() as Push;
-    console.log(
-      'Received push event:',
-      JSON.stringify(body, null, 2),
-    );
     const baseUrl = 'https://translate.miwa.lol';
     const embed: DiscordEmbed = {
-      author: body.author || body.user ? {
-        name: body.author || body.user,
-        url: `${baseUrl}/users/${body.author || body.user}`,
-        icon_url: `${baseUrl}/avatar/128/${body.author || body.user}.png`,
+      author: body.author ? {
+        name: body.author,
+        url: `${baseUrl}/users/${body.author}`,
+        icon_url: `${baseUrl}/avatar/128/${body.author}.png`,
       } : undefined,
       title: body.action,
       url: `${baseUrl}${body.url}`,
