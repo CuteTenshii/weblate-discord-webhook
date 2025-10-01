@@ -1,5 +1,9 @@
 export default {
   async fetch(request, env, ctx): Promise<Response> {
+    if (request.method !== 'POST') {
+      return new Response(null, { status: 405 });
+    }
+
     const webhookUrl = env.WEBHOOK_URL;
     if (!webhookUrl) {
       return new Response('WEBHOOK_URL is not set', { status: 500 });
@@ -25,7 +29,7 @@ export default {
     await fetch(webhookUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: 'Hello from Cloudflare Worker!' }),
+      body: JSON.stringify(payload),
     });
 
     return new Response(null, { status: 204 });
