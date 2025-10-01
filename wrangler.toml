@@ -1,0 +1,3 @@
+name = "weblate-discord-webhook"
+compatibility_date = "2025-10-01"
+main = "src/index.ts"

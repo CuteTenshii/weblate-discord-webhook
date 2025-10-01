@@ -1,0 +1,13 @@
+{
+  "name": "weblate-discord-webhook",
+  "module": "src/index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "^1.2.23",
+    "@types/node": "^24.6.1"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
