@@ -8,9 +8,17 @@ export default {
     const webhookId = request.headers.get('webhook-id') || '';
     const webhookSignature = request.headers.get('webhook-signature') || '';
     const webhookTimestamp = request.headers.get('webhook-timestamp') || '';
+
+    // Check if the request is from Weblate
     if (
       !weblateUserAgent.test(userAgent) || !webhookId || !webhookTimestamp
     ) return new Response(null, { status: 403 });
+
+    const now = Math.floor(Date.now() / 1000);
+    const timestamp = parseInt(webhookTimestamp, 10);
+    // Reject if the timestamp is more than 5 minutes from now
+    if (isNaN(timestamp) || Math.abs(now - timestamp) > 300)
+      return new Response(null, { status: 403 });
 
     const webhookUrl = env.WEBHOOK_URL;
     if (!webhookUrl) return new Response('WEBHOOK_URL is not set', { status: 500 });

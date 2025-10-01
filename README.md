@@ -8,6 +8,8 @@ A Cloudflare Worker that sends Weblate webhooks to Discord webhooks. It's like a
 
 To prevent abuse, this worker:
 - Checks the `User-Agent` header to ensure requests come from Weblate.
+- Checks the presence of the `Webhook-Id` and `Webhook-Timestamp` headers.
+  The `Webhook-Signature` header may be empty, it depends if you set a secret in the Webhooks addon.
 
 Webhook validation is not yet implemented.
 
