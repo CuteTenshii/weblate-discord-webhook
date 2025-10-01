@@ -2,15 +2,18 @@ const weblateUserAgent = /^Weblate\/[\d.]+$/;
 
 export default {
   async fetch(request, env, ctx): Promise<Response> {
+    if (request.method !== 'POST') return new Response(null, { status: 405 });
+
     const userAgent = request.headers.get('user-agent') || '';
-    if (request.method !== 'POST' || !weblateUserAgent.test(userAgent)) {
-      return new Response(null, { status: 405 });
-    }
+    const webhookId = request.headers.get('webhook-id') || '';
+    const webhookSignature = request.headers.get('webhook-signature') || '';
+    const webhookTimestamp = request.headers.get('webhook-timestamp') || '';
+    if (
+      !weblateUserAgent.test(userAgent) || !webhookId || !webhookTimestamp
+    ) return new Response(null, { status: 403 });
 
     const webhookUrl = env.WEBHOOK_URL;
-    if (!webhookUrl) {
-      return new Response('WEBHOOK_URL is not set', { status: 500 });
-    }
+    if (!webhookUrl) return new Response('WEBHOOK_URL is not set', { status: 500 });
 
     const body = await request.json() as Push;
     console.log(
