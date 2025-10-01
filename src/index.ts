@@ -10,6 +10,10 @@ export default {
     }
 
     const body = await request.json() as Push;
+    console.log(
+      'Received push event:',
+      JSON.stringify(body, null, 2),
+    );
     const baseUrl = 'https://translate.miwa.lol';
     const payload = {
       content: '```json\n' + JSON.stringify(body, null, 2) + '\n```',
