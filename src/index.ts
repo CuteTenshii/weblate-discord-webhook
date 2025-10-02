@@ -40,7 +40,12 @@ const languageMap: Record<string, string> = {
   lv: 'Latvian',
   et: 'Estonian',
   sl: 'Slovenian',
+  zh_TW: 'Chinese (Taiwan)',
+  zh_CN: 'Chinese (China)',
+  zh_Hans: 'Chinese (Simplified)',
+  zh_Hant: 'Chinese (Traditional)',
 };
+const code = (s: string) => '```\n' + s + '\n```';
 
 export default {
   async fetch(request, env, ctx): Promise<Response> {
@@ -92,29 +97,44 @@ export default {
       embed.color = 0x0000FF;
       embed.description = `A new string was added by ${body.author ? `[${body.author}](${baseUrl}/users/${body.author})` : 'unknown'}.`;
       embed.fields = [
-        { name: 'String', value: body.source?.[0] || '*N/A*' },
+        { name: 'String', value: body.source?.[0] ? code(body.source[0]) : '*N/A*' },
         { name: 'Language', value: body.translation ? (languageMap[body.translation] || body.translation) : '*N/A*' },
       ];
     } else if (body.action === 'String updated in the repository') {
       embed.color = 0x0000FF;
-      embed.description = `A string was updated by ${body.author ? `[${body.author}](${baseUrl}/users/${body.author})` : 'unknown'}.`;
+      const author = body.author ?
+        `[${body.author}](${baseUrl}/users/${body.author})` :
+        (body.user ? `[${body.user}](${baseUrl}/users/${body.user})` : 'unknown');
+      embed.description = `A string was updated by ${author}.`;
       embed.fields = [
-        {name: 'Old String', value: body.source ? body.source[0] || '*N/A*' : '*N/A*'},
-        {name: 'New String', value: body.target ? body.target[0] || '*N/A*' : '*N/A*'},
+        { name: 'Language', value: body.translation ? (languageMap[body.translation] || body.translation) : '*N/A*' },
+        {name: 'Old String', value: body.old?.[0] ? code(body.old[0]) || '*N/A*' : '*N/A*'},
+        {name: 'New String', value: body.target?.[0] ? code(body.target[0]) || '*N/A*' : '*N/A*'},
+      ];
+    } else if (body.action === 'Source string changed') {
+      embed.color = 0x0000FF;
+      const author = body.author ?
+        `[${body.author}](${baseUrl}/users/${body.author})` :
+        (body.user ? `[${body.user}](${baseUrl}/users/${body.user})` : 'unknown');
+      embed.description = `A source string was changed by ${author}.`;
+      embed.fields = [
+        { name: 'Language', value: body.translation ? (languageMap[body.translation] || body.translation) : '*N/A*' },
+        {name: 'Old String', value: body.old?.[0] ? code(body.old[0]) || '*N/A*' : '*N/A*'},
+        {name: 'New String', value: body.target?.[0] ? code(body.target[0]) || '*N/A*' : '*N/A*'},
       ];
     } else if (body.action === 'Translation changed') {
       embed.color = 0x00FF00;
       embed.description = `A translation was changed by ${body.author ? `[${body.author}](${baseUrl}/users/${body.author})` : 'unknown'}.`;
       embed.fields = [
-        {name: 'Old Translation', value: body.source ? body.source[0] || '*N/A*' : '*N/A*'},
-        {name: 'New Translation', value: body.target ? body.target[0] || '*N/A*' : '*N/A*'},
+        {name: 'Old Translation', value: body.old?.[0] ? code(body.old[0]) || '*N/A*' : '*N/A*'},
+        {name: 'New Translation', value: body.target?.[0] ? code(body.target[0]) || '*N/A*' : '*N/A*'},
       ];
     } else if (body.action === 'Suggestion removed') {
       embed.color = 0xFF0000;
       embed.description = `A suggestion was removed by ${body.author ? `[${body.author}](${baseUrl}/users/${body.author})` : 'unknown'}.`;
       embed.fields = [
-        {name: 'Removed Translation', value: body.target ? body.target[0] || '*N/A*' : '*N/A*'},
-        {name: 'Current Suggestion', value: body.source ? body.source[0] || '*N/A*' : '*N/A*'},
+        {name: 'Removed Translation', value: body.old?.[0] ? code(body.old[0]) || '*N/A*' : '*N/A*'},
+        {name: 'Current Suggestion', value: body.source?.[0] ? code(body.source[0]) || '*N/A*' : '*N/A*'},
       ];
     } else if (body.action === 'Changes committed') {
       embed.color = 0x00FFFF;
