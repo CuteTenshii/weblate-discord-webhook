@@ -67,11 +67,15 @@ export default {
     if (isNaN(timestamp) || Math.abs(now - timestamp) > 300)
       return new Response(null, { status: 403 });
 
-    const webhookUrl = env.WEBHOOK_URL;
-    if (!webhookUrl) return new Response('WEBHOOK_URL is not set', { status: 500 });
+    const webhookUrl = env.DISCORD_WEBHOOK_URL;
+    if (!webhookUrl) throw new Error('"DISCORD_WEBHOOK_URL" is not set in environment variables');
+    let baseUrl = env.WEBLATE_BASE_URL;
+    if (!baseUrl) throw new Error('"WEBLATE_BASE_URL" is not set in environment variables');
+    if (!baseUrl.startsWith('http://') && !baseUrl.startsWith('https://'))
+      throw new Error('"WEBLATE_BASE_URL" must start with "http://" or "https://"');
+    if (baseUrl.endsWith('/')) baseUrl = baseUrl.slice(0, -1);
 
     const body = await request.json() as Push;
-    const baseUrl = 'https://translate.miwa.lol';
     const embed: DiscordEmbed = {
       author: body.author ? {
         name: body.author,
