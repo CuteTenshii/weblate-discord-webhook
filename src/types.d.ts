@@ -9,8 +9,11 @@ interface Push {
   user: string;
   project: string;
   component: string;
-  source?: string[];
   target?: string[];
+  old?: string[];
+  source?: string[];
+  // Language code (e.g. "en", "fr", "de")
+  translation?: string;
 }
 
 interface DiscordEmbed {

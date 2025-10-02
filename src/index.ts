@@ -1,4 +1,46 @@
 const weblateUserAgent = /^Weblate\/[\d.]+$/;
+const languageMap: Record<string, string> = {
+  en: 'English',
+  en_US: 'English (US)',
+  en_GB: 'English (UK)',
+  fr: 'French',
+  fr_FR: 'French (France)',
+  fr_CA: 'French (Canada)',
+  de: 'German',
+  es: 'Spanish',
+  it: 'Italian',
+  pt: 'Portuguese',
+  ru: 'Russian',
+  zh: 'Chinese',
+  ja: 'Japanese',
+  ko: 'Korean',
+  ar: 'Arabic',
+  hi: 'Hindi',
+  sv: 'Swedish',
+  nl: 'Dutch',
+  pl: 'Polish',
+  tr: 'Turkish',
+  vi: 'Vietnamese',
+  id: 'Indonesian',
+  th: 'Thai',
+  cs: 'Czech',
+  ro: 'Romanian',
+  hu: 'Hungarian',
+  fi: 'Finnish',
+  no: 'Norwegian',
+  da: 'Danish',
+  el: 'Greek',
+  he: 'Hebrew',
+  uk: 'Ukrainian',
+  sr: 'Serbian',
+  hr: 'Croatian',
+  sk: 'Slovak',
+  bg: 'Bulgarian',
+  lt: 'Lithuanian',
+  lv: 'Latvian',
+  et: 'Estonian',
+  sl: 'Slovenian',
+};
 
 export default {
   async fetch(request, env, ctx): Promise<Response> {
@@ -49,7 +91,10 @@ export default {
     } else if (body.action === 'String added in the repository') {
       embed.color = 0x0000FF;
       embed.description = `A new string was added by ${body.author ? `[${body.author}](${baseUrl}/users/${body.author})` : 'unknown'}.`;
-      embed.fields = [{ name: 'String', value: body.target?.[0] || '*N/A*' }];
+      embed.fields = [
+        { name: 'String', value: body.source?.[0] || '*N/A*' },
+        { name: 'Language', value: body.translation ? (languageMap[body.translation] || body.translation) : '*N/A*' },
+      ];
     } else if (body.action === 'String updated in the repository') {
       embed.color = 0x0000FF;
       embed.description = `A string was updated by ${body.author ? `[${body.author}](${baseUrl}/users/${body.author})` : 'unknown'}.`;
@@ -73,7 +118,7 @@ export default {
       ];
     } else if (body.action === 'Changes committed') {
       embed.color = 0x00FFFF;
-      embed.description = `Changes were committed by ${body.author ? `[${body.author}](${baseUrl}/users/${body.author})` : 'unknown'}.`;
+      embed.description = `Changes for language **${body.translation ? (languageMap[body.translation] || body.translation) : 'N/A'}** were committed.`;
     }
 
     await fetch(webhookUrl, {
