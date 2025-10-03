@@ -143,6 +143,10 @@ export default {
     } else if (body.action === 'Changes committed') {
       embed.color = 0x00FFFF;
       embed.description = `Changes for language **${body.translation ? (languageMap[body.translation] || body.translation) : 'N/A'}** were committed.`;
+    } else if (body.action === 'Add-on configuration changed') {
+      embed.color = 0x800080;
+      const addon = body.target?.[0] ? body.target[0] : 'an add-on';
+      embed.description = `The configuration of the ${addon} add-on was changed.`;
     }
 
     await fetch(webhookUrl, {

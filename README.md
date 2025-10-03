@@ -24,6 +24,7 @@ Currently, the worker handles the following Weblate events:
 - Translation changed
 - Suggestion removed
 - Changes committed
+- Add-on configuration changed
 
 ## Abuse Prevention
 
